@@ -1,0 +1,12 @@
+{
+    "name": "fk/open-weixin",
+    "descripion": "Open WeChat APIs",
+    "autoload": {
+        "psr-4": {
+           "fk\\penweixin\\": "./src"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.2.3"
+    }
+}
