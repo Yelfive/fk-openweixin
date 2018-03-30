@@ -5,8 +5,5 @@
         "psr-4": {
            "fk\\penweixin\\": "./src"
         }
-    },
-    "require": {
-        "guzzlehttp/guzzle": "^6.2.3"
     }
 }
