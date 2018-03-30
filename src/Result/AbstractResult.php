@@ -5,14 +5,15 @@
  * @date 18-3-29
  */
 
+namespace fk\openweixin\Result;
+
 abstract class AbstractResult
 {
-    protected $attributes;
-
     public function __construct($properties)
     {
+        if (is_string($properties)) $properties = json_decode($properties, true) ?: [];
         foreach ($properties as $name => $value) {
-            if (method_exists($this, $name)) $this->$name = $value;
+            if (property_exists($this, $name)) $this->$name = $value;
         }
     }
 }

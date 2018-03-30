@@ -2,13 +2,15 @@
 
 /**
  * @author Felix Huang <yelfivehuang@gmail.com>
- * @date 18-3-29
+ * @date 18-3-30
  */
 
-class AuthorizeResult
+namespace fk\openweixin\Result;
+
+class AccessTokenResult extends AbstractResult
 {
     public $access_token;
-    public $expires_in;
+    public $expires_in = 7200;
     public $refresh_token;
     public $openid;
     public $scope;

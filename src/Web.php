@@ -7,6 +7,9 @@
 
 namespace fk\openweixin;
 
+use fk\openweixin\Result\AccessTokenResult;
+use fk\openweixin\Result\AuthorizeResult;
+
 class Web
 {
 
@@ -45,13 +48,35 @@ class Web
         return $token;
     }
 
+
+    public function getOpenid()
+    {
+        $result = $this->authorizeWithSnsapi_base();
+        return $result->openid;
+    }
+
+    /**
+     * @param string $scope
+     * @param string $returnURI
+     * @param string $state
+     * @return AccessTokenResult|null
+     * @throws \Exception
+     */
     protected function getAuthorizeInfo($scope, $returnURI, $state = '')
     {
-        $code = $_GET['code'];
-        $state = $_GET['state'] ?? '';
+        if (isset($_GET['code'])) {
+            $code = $_GET['code'];
+            return $this->getAuthorizeAccessTokenByCode($code);
+        }
 
-        $web->registerInterceptor();
         $this->getAuthorizeCode($scope, $returnURI, $state);
+    }
+
+    protected function getAuthorizeAccessTokenByCode($code)
+    {
+        $api = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={$this->appId}&secret={$this->appSecret}&code={$code}&grant_type=authorization_code";
+        $result = file_get_contents($api);
+        return new AccessTokenResult($result);
     }
 
     /**
@@ -100,10 +125,12 @@ HTML
     /**
      * @param string $state
      * @param null|string $returnURI
+     * @return AccessTokenResult
      * @throws \Exception
      */
     public function authorizeWithSnsapi_base($state = '', $returnURI = null)
     {
-        $this->getAuthorizeInfo('snsapi_base', $returnURI, $state);
+        $result = $this->getAuthorizeInfo('snsapi_base', $returnURI, $state);
+        return $result;
     }
 }
