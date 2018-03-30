@@ -3,7 +3,7 @@
     "descripion": "Open WeChat APIs",
     "autoload": {
         "psr-4": {
-           "fk\\penweixin\\": "./src"
+           "fk\\openweixin\\": "./src"
         }
     }
 }

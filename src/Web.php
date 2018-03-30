@@ -66,17 +66,24 @@ class Web
     {
         if (isset($_GET['code'])) {
             $code = $_GET['code'];
-            return $this->getAuthorizeAccessTokenByCode($code);
+            return $this->getAuthorizeAccessTokenByCode($code, $_GET['state'] ?? '');
         }
 
         $this->getAuthorizeCode($scope, $returnURI, $state);
     }
 
-    protected function getAuthorizeAccessTokenByCode($code)
+    /**
+     * @param string $code
+     * @param string $state
+     * @return AccessTokenResult
+     */
+    protected function getAuthorizeAccessTokenByCode($code, $state)
     {
         $api = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={$this->appId}&secret={$this->appSecret}&code={$code}&grant_type=authorization_code";
-        $result = file_get_contents($api);
-        return new AccessTokenResult($result);
+        $content = file_get_contents($api);
+        $result = new AccessTokenResult($content);
+        $result->state = $state;
+        return $result;
     }
 
     /**
@@ -92,7 +99,7 @@ class Web
      */
     protected function getAuthorizeCode($scope, $returnURI, $state)
     {
-        if ($_GET['code']) {
+        if (!empty($_GET['code'])) {
             return $_GET['code'];
         }
         if ($returnURI === null) {
@@ -105,7 +112,12 @@ class Web
             if (strlen($state) > 128) throw new \Exception('Parameter `state` should be no larger than 128 bytes.');
         }
         $api = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={$this->appId}&redirect_uri={$returnURI}&response_type=code&scope={$scope}&state={$state}#wechat_redirect";
-        header("Location:$api");
+        $this->redirect($api);
+    }
+
+    protected function redirect($uri)
+    {
+        header("Location:$uri");
         die(<<<HTML
 <html>
 <head>
@@ -115,7 +127,7 @@ class Web
 <title>Document</title>
 </head>
 <body>
-  <script>location.href="{$api}"</script>
+  <script>location.href="{$uri}"</script>
 </body>
 </html>
 HTML

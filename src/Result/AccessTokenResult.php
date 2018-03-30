@@ -16,4 +16,5 @@ class AccessTokenResult extends AbstractResult
     public $scope;
     public $errcode = 0;
     public $errmsg = null;
+    public $state;
 }
